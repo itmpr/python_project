@@ -1,36 +1,51 @@
-import tensorflow as tf
-print("TensorFlow version:", tf.__version__)
-physical_devices = tf.config.list_physical_devices('GPU')
-print("Num GPUs:", len(physical_devices))
-print("Num GPUs:", physical_devices)
+import csv
+import pandas as pd
+import  numpy as np
 
-mnist = tf.keras.datasets.mnist
+#file_1 = 'DISGENET_ALLL.txt'
+#file_2 = 'allf.eigenstratgeno'
+#file_3 = 'output.csv'
+file_1_rows = []
+#file_2_rows = []
 
-(x_train, y_train), (x_test, y_test) = mnist.load_data()
-x_train, x_test = x_train / 255.0, x_test / 255.0
-model = tf.keras.models.Sequential([
-  tf.keras.layers.Flatten(input_shape=(28, 28)),
-  tf.keras.layers.Dense(128, activation='relu'),
-  tf.keras.layers.Dropout(0.2),
-  tf.keras.layers.Dense(10)
-])
-predictions = model(x_train[:1]).numpy()
-predictions
-tf.nn.softmax(predictions).numpy()
+f = pd.read_csv('allf.eigenstratgeno', nrows=1)
+pd.set_option('display.max_colwidth', None)
+pd.set_option('display.max_columns', None)
 
+# print(f.head(10))
 
-loss_fn = tf.keras.losses.SparseCategoricalCrossentropy(from_logits=True)
+with open('allf.eigenstratgeno', newline='\n') as f:
+    reader = csv.reader(f)
+    file_1_rows.append(
+        ['204', '205', '535', '1271', '2463', '2464', '2465', '3727', '4855', '7482', '7775', '10945', '11387', '12567',
+         '12568'])
+    i = 0
+    for row in reader:
+        i +=1
+        try:
+            # row = row[0].split('\t')
+            #print(len(row),len(row[0]))
+            #[[16389]]
+            file_1_rows.append(
+                [row[0][204], row[0][205],row[0][535], row[0][1271], row[0][2463], row[0][2464], row[0][2465], row[0][3727],
+                 row[0][4855], row[0][7482], row[0][7775], row[0][10945], row[0][11387], row[0][12567], row[0][12568]])
+        except Exception as e:
+            print(i)
+            file_1_rows.append(['None'])
+            print(e)
 
+# open the file in the write mode
+with open('output', 'w') as f:
+    # create the csv writer
+    writer = csv.writer(f)
 
-loss_fn(y_train[:1], predictions).numpy()
-model.compile(optimizer='adam',
-              loss=loss_fn,
-              metrics=['accuracy'])
-model.fit(x_train, y_train, epochs=50)
+    # write a row to the csv file
+    for element in file_1_rows:
+        writer.writerow(element)
 
+exit(0)
 
-probability_model = tf.keras.Sequential([
-  model,
-  tf.keras.layers.Softmax()
-])
-probability_model(x_test[:5])
+#pd.set_option('display.max_columns', None)
+# print('204')
+# print(f.iloc[204])
+# 233exit(0)
